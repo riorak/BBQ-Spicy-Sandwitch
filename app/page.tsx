@@ -1,11 +1,8 @@
-import { DeployButton } from "@/components/deploy-button";
 import { EnvVarWarning } from "@/components/env-var-warning";
 import { AuthButton } from "@/components/auth-button";
-import { Hero } from "@/components/hero";
 import { ThemeSwitcher } from "@/components/theme-switcher";
-import { ConnectSupabaseSteps } from "@/components/tutorial/connect-supabase-steps";
-import { SignUpUserSteps } from "@/components/tutorial/sign-up-user-steps";
 import { hasEnvVars } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Suspense } from "react";
 
@@ -16,7 +13,7 @@ export default function Home() {
         <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
           <div className="w-full max-w-5xl flex justify-between items-center p-3 px-5 text-sm">
             <div className="flex gap-5 items-center font-semibold">
-              <Link href={"/"}>Next.js Supabase Starter</Link>
+              <Link href={"/"}>Polyedge</Link>
             </div>
             {!hasEnvVars ? (
               <EnvVarWarning />
@@ -27,26 +24,33 @@ export default function Home() {
             )}
           </div>
         </nav>
-        <div className="flex-1 flex flex-col gap-20 max-w-5xl p-5">
-          <Hero />
-          <main className="flex-1 flex flex-col gap-6 px-4">
-            <h2 className="font-medium text-xl mb-4">Next steps</h2>
-            {hasEnvVars ? <SignUpUserSteps /> : <ConnectSupabaseSteps />}
-          </main>
+        <div className="flex-1 flex flex-col gap-20 max-w-5xl p-5 w-full">
+          <div className="flex flex-col gap-8 items-center justify-center text-center mt-20">
+            <h1 className="text-4xl md:text-6xl font-bold">
+              Polyedge
+            </h1>
+            <p className="text-xl text-muted-foreground">
+              Your Polymarket companion
+            </p>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-12 w-full max-w-2xl">
+              <Button size="lg" variant="default">
+                Markets
+              </Button>
+              <Button size="lg" variant="default">
+                Portfolio
+              </Button>
+              <Button size="lg" variant="default">
+                Analytics
+              </Button>
+              <Button size="lg" variant="default">
+                Settings
+              </Button>
+            </div>
+          </div>
         </div>
 
         <footer className="w-full flex items-center justify-center border-t mx-auto text-center text-xs gap-8 py-16">
-          <p>
-            Powered by{" "}
-            <a
-              href="https://supabase.com/?utm_source=create-next-app&utm_medium=template&utm_term=nextjs"
-              target="_blank"
-              className="font-bold hover:underline"
-              rel="noreferrer"
-            >
-              Supabase
-            </a>
-          </p>
           <ThemeSwitcher />
         </footer>
       </div>
