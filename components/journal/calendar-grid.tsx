@@ -58,9 +58,9 @@ export function CalendarGrid({ data, currentMonth, onDayClick }: CalendarGridPro
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full h-full flex flex-col min-h-0">
       {/* Day of week headers */}
-      <div className="grid grid-cols-7 gap-2 mb-2">
+      <div className="grid grid-cols-7 gap-2 mb-2 shrink-0">
         {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
           <div
             key={day}
@@ -72,10 +72,10 @@ export function CalendarGrid({ data, currentMonth, onDayClick }: CalendarGridPro
       </div>
 
       {/* Calendar grid */}
-      <div className="grid grid-cols-7 gap-2">
+      <div className="grid grid-cols-7 grid-rows-6 gap-2 flex-1 min-h-0">
         {days.map((day, index) => {
           if (day.date === 0) {
-            return <div key={`empty-${index}`} className="aspect-square" />;
+            return <div key={`empty-${index}`} className="w-full h-full" />;
           }
 
           const hasData = !!day.data;
@@ -86,7 +86,7 @@ export function CalendarGrid({ data, currentMonth, onDayClick }: CalendarGridPro
               key={day.date}
               onClick={() => day.data && onDayClick(day.data)}
               disabled={!hasData}
-              className={`aspect-square rounded-lg border border-border p-2 relative transition-all ${
+              className={`w-full h-full rounded-lg border border-border p-2 relative transition-all ${
                 hasData
                   ? "cursor-pointer hover:scale-105 hover:shadow-lg"
                   : "cursor-default opacity-40"
