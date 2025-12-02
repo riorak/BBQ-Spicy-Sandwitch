@@ -105,6 +105,21 @@ export function SignUpForm({
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? "Creating an account..." : "Sign up"}
               </Button>
+                <Button
+                  type="button"
+                  className="w-full mt-2 bg-blue-600 hover:bg-blue-700 text-white"
+                  onClick={async () => {
+                    const supabase = createClient();
+                    await supabase.auth.signInWithOAuth({
+                      provider: "google",
+                      options: {
+                        redirectTo: `${window.location.origin}/auth/callback`,
+                      },
+                    });
+                  }}
+                >
+                  Sign up with Google
+                </Button>
             </div>
             <div className="mt-4 text-center text-sm">
               Already have an account?{" "}

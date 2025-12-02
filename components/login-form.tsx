@@ -92,6 +92,21 @@ export function LoginForm({
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? "Logging in..." : "Login"}
               </Button>
+                <Button
+                  type="button"
+                  className="w-full mt-2 bg-blue-600 hover:bg-blue-700 text-white"
+                  onClick={async () => {
+                    const supabase = createClient();
+                    await supabase.auth.signInWithOAuth({
+                      provider: "google",
+                      options: {
+                        redirectTo: `${window.location.origin}/auth/callback`,
+                      },
+                    });
+                  }}
+                >
+                  Login with Google
+                </Button>
             </div>
             <div className="mt-4 text-center text-sm">
               Don&apos;t have an account?{" "}
