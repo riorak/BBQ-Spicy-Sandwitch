@@ -35,16 +35,16 @@ export default function Home() {
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-12 w-full max-w-2xl">
               <Button size="lg" variant="default">
-                Markets
+                Dashboard
               </Button>
               <Button size="lg" variant="default">
-                Portfolio
+                Journal
               </Button>
               <Button size="lg" variant="default">
-                Analytics
+                Market Analysis
               </Button>
               <Button size="lg" variant="default">
-                Settings
+                Polymarket Terminal
               </Button>
             </div>
           </div>
