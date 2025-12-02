@@ -34,11 +34,11 @@ export default function Home() {
             </p>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-12 w-full max-w-2xl">
-              <Button size="lg" variant="default">
-                Dashboard
+              <Button size="lg" variant="default" asChild>
+                <Link href="/protected">Dashboard</Link>
               </Button>
-              <Button size="lg" variant="default">
-                Journal
+              <Button size="lg" variant="default" asChild>
+                <Link href="/journal">Journal</Link>
               </Button>
               <Button size="lg" variant="default">
                 Market Analysis
