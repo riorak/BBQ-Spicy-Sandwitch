@@ -109,11 +109,11 @@ export function SignUpForm({
                   type="button"
                   className="w-full mt-2 bg-blue-600 hover:bg-blue-700 text-white"
                   onClick={async () => {
-                    const supabase = createClient();
-                    await supabase.auth.signInWithOAuth({
-                      provider: "google",
+                    const supabase = await createClient();
+                    const { data, error } = await supabase.auth.signInWithOAuth({
+                      provider: 'google',
                       options: {
-                        redirectTo: `${window.location.origin}/auth/callback`,
+                        redirectTo: 'http://polyedge.vercel.app/auth/callback',
                       },
                     });
                   }}
