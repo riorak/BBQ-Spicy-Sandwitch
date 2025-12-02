@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 
 export default async function Home() {
-  const supabase = await createClient()
+  const supabase = createClient()
   
   // Test connection
   const { data, error } = await supabase.from('_prisma_migrations').select('*').limit(1)
