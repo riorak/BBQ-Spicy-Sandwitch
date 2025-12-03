@@ -30,7 +30,7 @@ export default function Home() {
         </p>
         
         <Button size="lg" variant="default" className="mt-8" asChild>
-          <Link href="/journal">To the App</Link>
+          <Link href="/app">To the App</Link>
         </Button>
       </div>
 
