@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { X, Sparkles, Upload, AlertTriangle } from "lucide-react";
+import { X, Sparkles, Upload, AlertTriangle, ChevronRight, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { JournalDay, Trade } from "./journal-view";
 
@@ -26,15 +26,18 @@ const categoryLabels: Record<string, string> = {
 };
 
 export function DayDetailDrawer({ day, isOpen, onClose }: DayDetailDrawerProps) {
-  const [notes, setNotes] = useState(day?.notes || "");
-  const [showAIAnalysis, setShowAIAnalysis] = useState(false);
   const [detailData, setDetailData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+  const [selectedTrade, setSelectedTrade] = useState<any>(null);
+  const [tradeNotes, setTradeNotes] = useState<Record<number, string>>({});
+  const [showAIAnalysis, setShowAIAnalysis] = useState<Record<number, boolean>>({});
+  const [savingNotes, setSavingNotes] = useState(false);
 
   // Fetch detailed data when day changes
   useEffect(() => {
     if (day?.date) {
       setLoading(true);
+      setSelectedTrade(null);
       fetch(`/app/api/journal/day-detail?date=${day.date}`)
         .then(res => res.json())
         .then(data => {
@@ -44,6 +47,18 @@ export function DayDetailDrawer({ day, isOpen, onClose }: DayDetailDrawerProps) 
         .catch(() => setLoading(false));
     }
   }, [day?.date]);
+
+  // Load notes when trade is selected
+  useEffect(() => {
+    if (selectedTrade?.id) {
+      fetch(`/app/api/journal/trade-notes?trade_id=${selectedTrade.id}`)
+        .then(res => res.json())
+        .then(data => {
+          setTradeNotes(prev => ({ ...prev, [selectedTrade.id]: data.notes || "" }));
+        })
+        .catch(() => {});
+    }
+  }, [selectedTrade?.id]);
 
   if (!day) return null;
 
@@ -65,9 +80,33 @@ export function DayDetailDrawer({ day, isOpen, onClose }: DayDetailDrawerProps) 
     return `${amount >= 0 ? "+" : ""}$${amount.toFixed(2)}`;
   };
 
+  const saveTradeNotes = async (tradeId: number) => {
+    setSavingNotes(true);
+    try {
+      const res = await fetch("/app/api/journal/trade-notes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          trade_id: tradeId,
+          notes: tradeNotes[tradeId] || "",
+        }),
+      });
+      if (res.ok) {
+        // Success feedback could be added here
+      }
+    } catch (error) {
+      console.error("Failed to save notes:", error);
+    }
+    setSavingNotes(false);
+  };
+
+  const handleAIAnalysis = async (tradeId: number) => {
+    setShowAIAnalysis(prev => ({ ...prev, [tradeId]: !prev[tradeId] }));
+    // TODO: API call to get AI analysis
+  };
+
   // Use trades from detailData if available
-  const trades = detailData?.trades || {};
-  const tradesByCategory: Record<string, any[]> = trades;
+  const allTrades = detailData?.trades ? Object.values(detailData.trades).flat() : [];
 
   return (
     <>
@@ -81,7 +120,7 @@ export function DayDetailDrawer({ day, isOpen, onClose }: DayDetailDrawerProps) 
 
       {/* Drawer */}
       <div
-        className={`fixed top-0 right-0 h-full w-full md:w-[640px] bg-background border-l border-border/50 z-50 transform transition-transform duration-300 ease-in-out overflow-y-auto ${
+        className={`fixed top-0 right-0 h-full w-full md:w-[900px] bg-background border-l border-border/50 z-50 transform transition-transform duration-300 ease-in-out ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
@@ -117,7 +156,7 @@ export function DayDetailDrawer({ day, isOpen, onClose }: DayDetailDrawerProps) 
                 </div>
                 <div>
                   <span className="text-muted-foreground text-xs uppercase tracking-wider">Trades</span>
-                  <p className="text-xl font-semibold mt-0.5">{Object.values(tradesByCategory).flat().length}</p>
+                  <p className="text-xl font-semibold mt-0.5">{allTrades.length}</p>
                 </div>
               </div>
             </div>
@@ -127,139 +166,175 @@ export function DayDetailDrawer({ day, isOpen, onClose }: DayDetailDrawerProps) 
           </div>
         </div>
 
-        {/* Content */}
-        <div className="p-6 space-y-6">
-          {/* Section 1: Trade List */}
-          <div>
-            <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-4">Trades</h3>
-            <div className="space-y-4">
-              {Object.entries(tradesByCategory).map(([category, trades]) => (
-                <div key={category} className="space-y-2">
-                  {trades.map((trade) => (
-                    <div
-                      key={trade.id}
-                      className="bg-secondary/20 rounded-lg p-4 border border-border/50 hover:border-border transition-colors"
-                    >
-                      <div className="flex justify-between items-start mb-3">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            <h5 className="font-semibold text-base">{trade.market}</h5>
-                            <span
-                              className={`text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wide ${categoryColors[category]} bg-secondary/50`}
-                            >
-                              {categoryLabels[category]}
-                            </span>
-                          </div>
-                          <div className="text-sm text-muted-foreground font-mono">
-                            {formatPrice(trade.entry)}
-                            <span className="mx-2 text-muted-foreground/50">→</span>
-                            {formatPrice(trade.exit)}
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <div
-                            className={`text-xl font-bold ${
-                              trade.outcome === "win"
-                                ? "text-green-500"
-                                : "text-red-500"
-                            }`}
-                          >
-                            {formatCurrency(trade.pnl)}
-                          </div>
-                        </div>
-                      </div>
-                      {trade.missed_profit && trade.missed_profit > 0 && (
-                        <div className="flex items-start gap-2 text-xs bg-yellow-500/10 border border-yellow-500/30 rounded-md p-3 mt-2">
-                          <AlertTriangle className="h-4 w-4 text-yellow-500 flex-shrink-0 mt-0.5" />
-                          <div>
-                            <span className="font-semibold text-yellow-600 dark:text-yellow-400">
-                              Early Exit
-                            </span>
-                            <p className="text-muted-foreground mt-0.5">
-                              Missed ${trade.missed_profit.toFixed(2)} potential profit. Market resolved at $1.00.
-                            </p>
-                          </div>
-                        </div>
-                      )}
+        {/* Content - Two Column Layout */}
+        <div className="flex h-[calc(100%-140px)]">
+          {/* Left: Trade List */}
+          <div className="w-2/5 border-r border-border/50 overflow-y-auto p-6">
+            <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-4">
+              Select Trade
+            </h3>
+            <div className="space-y-2">
+              {loading ? (
+                <div className="text-center text-muted-foreground py-8">Loading...</div>
+              ) : allTrades.length === 0 ? (
+                <div className="text-center text-muted-foreground py-8">No trades</div>
+              ) : (
+                allTrades.map((trade: any) => (
+                  <button
+                    key={trade.id}
+                    onClick={() => setSelectedTrade(trade)}
+                    className={`w-full text-left p-4 rounded-lg border transition-all ${
+                      selectedTrade?.id === trade.id
+                        ? "border-primary bg-primary/10"
+                        : "border-border/50 hover:border-border bg-secondary/20"
+                    }`}
+                  >
+                    <div className="flex justify-between items-start mb-2">
+                      <h5 className="font-semibold text-sm line-clamp-1">{trade.market}</h5>
+                      <ChevronRight className={`h-4 w-4 flex-shrink-0 ml-2 ${
+                        selectedTrade?.id === trade.id ? "text-primary" : "text-muted-foreground"
+                      }`} />
                     </div>
-                  ))}
-                </div>
-              ))}
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-muted-foreground font-mono">
+                        {formatPrice(trade.entry || 0)} → {formatPrice(trade.exit || 0)}
+                      </span>
+                      <span
+                        className={`font-bold ${
+                          trade.outcome === "win" ? "text-green-500" : "text-red-500"
+                        }`}
+                      >
+                        {formatCurrency(trade.pnl)}
+                      </span>
+                    </div>
+                  </button>
+                ))
+              )}
             </div>
           </div>
 
-          {/* Section 2: Journaling Inputs */}
-          <div>
-            <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-4">Notes</h3>
-            <div className="space-y-4">
-              {/* Notes */}
-              <div>
-                <textarea
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                  placeholder="What did you learn from today's trades?"
-                  className="w-full min-h-[140px] p-4 rounded-lg bg-secondary/20 border border-border/50 resize-none focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-transparent text-sm"
-                />
+          {/* Right: Trade Details */}
+          <div className="w-3/5 overflow-y-auto p-6">
+            {!selectedTrade ? (
+              <div className="flex items-center justify-center h-full text-muted-foreground">
+                Select a trade to view details
               </div>
-
-              {/* Screenshot Upload */}
-              <div>
-                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">
-                  Screenshots
-                </label>
-                <div className="border-2 border-dashed border-border/50 rounded-lg p-8 text-center hover:border-primary/30 hover:bg-secondary/10 transition-all cursor-pointer">
-                  <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground/60" />
-                  <p className="text-xs text-muted-foreground">
-                    Drag and drop screenshots or click to browse
-                  </p>
+            ) : (
+              <div className="space-y-6">
+                {/* Trade Summary */}
+                <div className="bg-secondary/20 rounded-lg p-5 border border-border/50">
+                  <h4 className="font-bold text-lg mb-3">{selectedTrade.market}</h4>
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <span className="text-muted-foreground text-xs uppercase tracking-wider block mb-1">
+                        Entry
+                      </span>
+                      <p className="font-semibold font-mono">{formatPrice(selectedTrade.entry || 0)}</p>
+                    </div>
+                    <div>
+                      <span className="text-muted-foreground text-xs uppercase tracking-wider block mb-1">
+                        Exit
+                      </span>
+                      <p className="font-semibold font-mono">{formatPrice(selectedTrade.exit || 0)}</p>
+                    </div>
+                    <div>
+                      <span className="text-muted-foreground text-xs uppercase tracking-wider block mb-1">
+                        P&L
+                      </span>
+                      <p
+                        className={`font-bold text-lg ${
+                          selectedTrade.pnl >= 0 ? "text-green-500" : "text-red-500"
+                        }`}
+                      >
+                        {formatCurrency(selectedTrade.pnl)}
+                      </p>
+                    </div>
+                    <div>
+                      <span className="text-muted-foreground text-xs uppercase tracking-wider block mb-1">
+                        Category
+                      </span>
+                      <span
+                        className={`text-xs font-semibold px-2 py-1 rounded ${
+                          categoryColors[selectedTrade.category]
+                        } bg-secondary/50`}
+                      >
+                        {categoryLabels[selectedTrade.category]}
+                      </span>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          </div>
 
-          {/* Section 3: AI Analysis */}
-          <div>
-            <Button
-              onClick={() => setShowAIAnalysis(!showAIAnalysis)}
-              variant="outline"
-              className="w-full border-primary/20 hover:bg-primary/5"
-            >
-              <Sparkles className="h-4 w-4 mr-2" />
-              {showAIAnalysis ? "Hide" : "Get"} AI Analysis
-            </Button>
+                {/* Notes */}
+                <div>
+                  <label className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-3 block">
+                    Trade Notes
+                  </label>
+                  <textarea
+                    value={tradeNotes[selectedTrade.id] || ""}
+                    onChange={(e) =>
+                      setTradeNotes((prev) => ({ ...prev, [selectedTrade.id]: e.target.value }))
+                    }
+                    placeholder="What was your thesis? What did you learn?"
+                    className="w-full min-h-[120px] p-4 rounded-lg bg-secondary/20 border border-border/50 resize-none focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-transparent text-sm"
+                  />
+                  <Button
+                    onClick={() => saveTradeNotes(selectedTrade.id)}
+                    disabled={savingNotes}
+                    size="sm"
+                    className="mt-2"
+                  >
+                    <Save className="h-4 w-4 mr-2" />
+                    {savingNotes ? "Saving..." : "Save Notes"}
+                  </Button>
+                </div>
 
-            {showAIAnalysis && (
-              <div className="mt-4 space-y-4 bg-primary/5 border border-primary/20 rounded-lg p-5">
+                {/* Screenshot Upload */}
                 <div>
-                  <h4 className="font-semibold text-sm mb-2 flex items-center gap-2">
-                    <Sparkles className="h-4 w-4 text-primary" />
-                    Market Context
-                  </h4>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    Election day saw unprecedented volatility. Trump odds
-                    shifted dramatically between 6-8 PM EST as early results
-                    came in. Your exit at 85¢ was well-timed given the
-                    uncertainty, though the market eventually settled at $1.00
-                    by midnight.
-                  </p>
+                  <label className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-3 block">
+                    Screenshots
+                  </label>
+                  <div className="border-2 border-dashed border-border/50 rounded-lg p-6 text-center hover:border-primary/30 hover:bg-secondary/10 transition-all cursor-pointer">
+                    <Upload className="h-6 w-6 mx-auto mb-2 text-muted-foreground/60" />
+                    <p className="text-xs text-muted-foreground">
+                      Drag and drop or click to upload
+                    </p>
+                  </div>
                 </div>
+
+                {/* AI Analysis */}
                 <div>
-                  <h4 className="font-semibold text-sm mb-2">Entry Timing Analysis</h4>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    Your entry at 60¢ came 2 hours before polls closed,
-                    capturing the pre-result uncertainty discount. This was a
-                    strong entry point. Consider holding through initial
-                    volatility next time - your exit was 3 hours before
-                    resolution.
-                  </p>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-sm mb-2">Risk Assessment</h4>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    Position sizing was appropriate at 40% of daily volume.
-                    Your crypto hedge (BTC &gt; $70k) showed good
-                    diversification strategy during political volatility.
-                  </p>
+                  <Button
+                    onClick={() => handleAIAnalysis(selectedTrade.id)}
+                    variant="outline"
+                    className="w-full border-primary/20 hover:bg-primary/5"
+                  >
+                    <Sparkles className="h-4 w-4 mr-2" />
+                    {showAIAnalysis[selectedTrade.id] ? "Hide" : "Get"} AI Analysis
+                  </Button>
+
+                  {showAIAnalysis[selectedTrade.id] && (
+                    <div className="mt-4 space-y-4 bg-primary/5 border border-primary/20 rounded-lg p-5">
+                      <div>
+                        <h4 className="font-semibold text-sm mb-2 flex items-center gap-2">
+                          <Sparkles className="h-4 w-4 text-primary" />
+                          Trade Analysis
+                        </h4>
+                        <p className="text-sm text-muted-foreground leading-relaxed">
+                          Entry at {formatPrice(selectedTrade.entry || 0)} showed good timing based on market
+                          conditions. {selectedTrade.outcome === "win" ? "Profitable exit" : "Loss realized"} at{" "}
+                          {formatPrice(selectedTrade.exit || 0)}.
+                        </p>
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-sm mb-2">Key Insights</h4>
+                        <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside">
+                          <li>Market momentum was {selectedTrade.outcome === "win" ? "favorable" : "against"} your position</li>
+                          <li>Position size appropriate for volatility level</li>
+                          <li>Consider holding time relative to event timeline</li>
+                        </ul>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             )}

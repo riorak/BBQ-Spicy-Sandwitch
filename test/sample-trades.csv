@@ -1,0 +1,131 @@
+market_id,title,category,side,price,quantity,fee,executed_at,tx_id
+market_001,Trump wins 2024 Election,politics,buy,0.45,100,0.50,2025-10-15T09:23:15Z,tx_001
+market_001,Trump wins 2024 Election,politics,sell,0.72,100,0.50,2025-10-16T14:45:22Z,tx_002
+market_002,Biden approval > 45%,politics,buy,0.38,150,0.75,2025-10-15T10:15:30Z,tx_003
+market_002,Biden approval > 45%,politics,sell,0.42,150,0.60,2025-10-17T11:20:10Z,tx_004
+market_003,GOP wins House,politics,buy,0.65,200,1.00,2025-10-18T08:30:45Z,tx_005
+market_003,GOP wins House,politics,sell,0.58,200,1.20,2025-10-20T16:42:33Z,tx_006
+market_004,Lakers win NBA Finals,sports,buy,0.22,300,1.50,2025-10-19T13:25:18Z,tx_007
+market_004,Lakers win NBA Finals,sports,sell,0.18,300,1.20,2025-10-21T09:18:55Z,tx_008
+market_005,Bitcoin > $100k by Dec,crypto,buy,0.55,250,1.25,2025-10-20T07:45:22Z,tx_009
+market_005,Bitcoin > $100k by Dec,crypto,sell,0.68,250,1.50,2025-10-22T15:33:40Z,tx_010
+market_006,Ethereum > $5k by Nov,crypto,buy,0.42,180,0.90,2025-10-21T10:22:15Z,tx_011
+market_006,Ethereum > $5k by Nov,crypto,sell,0.39,180,0.85,2025-10-23T12:15:28Z,tx_012
+market_007,Chiefs win Super Bowl,sports,buy,0.38,220,1.10,2025-10-22T14:50:33Z,tx_013
+market_007,Chiefs win Super Bowl,sports,sell,0.45,220,1.15,2025-10-24T08:25:19Z,tx_014
+market_008,SpaceX Mars mission success,science,buy,0.28,400,2.00,2025-10-23T11:40:22Z,tx_015
+market_008,SpaceX Mars mission success,science,sell,0.32,400,1.80,2025-10-25T13:55:45Z,tx_016
+market_009,Fed cuts rates in Nov,politics,buy,0.72,150,0.75,2025-10-24T09:15:30Z,tx_017
+market_009,Fed cuts rates in Nov,politics,sell,0.85,150,0.90,2025-10-26T10:20:15Z,tx_018
+market_010,Warriors make playoffs,sports,buy,0.55,175,0.85,2025-10-25T15:35:42Z,tx_019
+market_010,Warriors make playoffs,sports,sell,0.48,175,0.80,2025-10-27T11:45:22Z,tx_020
+market_011,Solana > $200 by year end,crypto,buy,0.48,300,1.50,2025-10-26T08:22:18Z,tx_021
+market_011,Solana > $200 by year end,crypto,sell,0.62,300,1.75,2025-10-28T14:30:55Z,tx_022
+market_012,AI breakthrough announced,science,buy,0.35,250,1.25,2025-10-27T12:50:33Z,tx_023
+market_012,AI breakthrough announced,science,sell,0.41,250,1.30,2025-10-29T09:40:28Z,tx_024
+market_013,Senate flips Democrat,politics,buy,0.32,200,1.00,2025-10-28T10:15:45Z,tx_025
+market_013,Senate flips Democrat,politics,sell,0.28,200,0.95,2025-10-30T15:25:38Z,tx_026
+market_014,Yankees win World Series,sports,buy,0.42,280,1.40,2025-10-29T13:45:22Z,tx_027
+market_014,Yankees win World Series,sports,sell,0.55,280,1.65,2025-10-31T08:15:50Z,tx_028
+market_015,Dogecoin > $1 by EOY,crypto,buy,0.15,500,2.50,2025-10-30T11:20:35Z,tx_029
+market_015,Dogecoin > $1 by EOY,crypto,sell,0.12,500,2.20,2025-11-01T14:35:42Z,tx_030
+market_016,Climate bill passes,politics,buy,0.58,160,0.80,2025-10-31T09:55:28Z,tx_031
+market_016,Climate bill passes,politics,sell,0.65,160,0.85,2025-11-02T10:40:15Z,tx_032
+market_017,Patriots miss playoffs,sports,buy,0.68,190,0.95,2025-11-01T15:25:33Z,tx_033
+market_017,Patriots miss playoffs,sports,sell,0.75,190,1.05,2025-11-03T11:50:22Z,tx_034
+market_018,Cardano > $2 by Dec,crypto,buy,0.38,320,1.60,2025-11-02T08:40:45Z,tx_035
+market_018,Cardano > $2 by Dec,crypto,sell,0.42,320,1.70,2025-11-04T13:20:18Z,tx_036
+market_019,Fusion energy breakthrough,science,buy,0.22,450,2.25,2025-11-03T12:15:50Z,tx_037
+market_019,Fusion energy breakthrough,science,sell,0.28,450,2.40,2025-11-05T09:35:28Z,tx_038
+market_020,Trump leads GOP primary,politics,buy,0.82,120,0.60,2025-11-04T10:50:35Z,tx_039
+market_020,Trump leads GOP primary,politics,sell,0.88,120,0.65,2025-11-06T14:25:42Z,tx_040
+market_021,Celtics win East,sports,buy,0.52,210,1.05,2025-11-05T13:40:22Z,tx_041
+market_021,Celtics win East,sports,sell,0.58,210,1.15,2025-11-07T08:55:33Z,tx_042
+market_022,Polygon > $5 by Q1 2026,crypto,buy,0.45,270,1.35,2025-11-06T11:20:45Z,tx_043
+market_022,Polygon > $5 by Q1 2026,crypto,sell,0.38,270,1.25,2025-11-08T15:45:28Z,tx_044
+market_023,NASA moon landing 2026,science,buy,0.62,180,0.90,2025-11-07T09:35:18Z,tx_045
+market_023,NASA moon landing 2026,science,sell,0.68,180,0.95,2025-11-09T12:50:35Z,tx_046
+market_024,Impeachment proceedings,politics,buy,0.28,350,1.75,2025-11-08T14:15:42Z,tx_047
+market_024,Impeachment proceedings,politics,sell,0.22,350,1.60,2025-11-10T10:25:50Z,tx_048
+market_025,Mavericks win West,sports,buy,0.35,240,1.20,2025-11-09T08:45:33Z,tx_049
+market_025,Mavericks win West,sports,sell,0.42,240,1.30,2025-11-11T13:35:22Z,tx_050
+market_026,Avalanche > $150 by Dec,crypto,buy,0.52,290,1.45,2025-11-10T12:20:45Z,tx_051
+market_026,Avalanche > $150 by Dec,crypto,sell,0.48,290,1.40,2025-11-12T09:40:28Z,tx_052
+market_027,Quantum computing milestone,science,buy,0.38,380,1.90,2025-11-11T10:55:35Z,tx_053
+market_027,Quantum computing milestone,science,sell,0.45,380,2.05,2025-11-13T14:20:42Z,tx_054
+market_028,Midterm election turnout,politics,buy,0.65,170,0.85,2025-11-12T13:30:22Z,tx_055
+market_028,Midterm election turnout,politics,sell,0.72,170,0.95,2025-11-14T08:45:33Z,tx_056
+market_029,Heat make playoffs,sports,buy,0.58,200,1.00,2025-11-13T11:15:45Z,tx_057
+market_029,Heat make playoffs,sports,sell,0.52,200,0.95,2025-11-15T15:30:28Z,tx_058
+market_030,Litecoin > $500 by EOY,crypto,buy,0.32,340,1.70,2025-11-14T09:40:35Z,tx_059
+market_030,Litecoin > $500 by EOY,crypto,sell,0.38,340,1.85,2025-11-16T12:55:42Z,tx_060
+market_031,New particle discovered,science,buy,0.25,420,2.10,2025-11-15T14:25:22Z,tx_061
+market_031,New particle discovered,science,sell,0.22,420,2.00,2025-11-17T10:40:33Z,tx_062
+market_032,Cabinet reshuffle,politics,buy,0.48,190,0.95,2025-11-16T08:50:45Z,tx_063
+market_032,Cabinet reshuffle,politics,sell,0.55,190,1.05,2025-11-18T13:15:28Z,tx_064
+market_033,Bucks win championship,sports,buy,0.42,260,1.30,2025-11-17T12:35:35Z,tx_065
+market_033,Bucks win championship,sports,sell,0.48,260,1.40,2025-11-19T09:50:42Z,tx_066
+market_034,Chainlink > $100 by Dec,crypto,buy,0.55,310,1.55,2025-11-18T10:20:22Z,tx_067
+market_034,Chainlink > $100 by Dec,crypto,sell,0.62,310,1.70,2025-11-20T14:35:33Z,tx_068
+market_035,Ocean cleanup milestone,science,buy,0.48,280,1.40,2025-11-19T13:45:45Z,tx_069
+market_035,Ocean cleanup milestone,science,sell,0.52,280,1.45,2025-11-21T08:20:28Z,tx_070
+market_036,Supreme Court ruling,politics,buy,0.72,140,0.70,2025-11-20T11:30:35Z,tx_071
+market_036,Supreme Court ruling,politics,sell,0.78,140,0.75,2025-11-22T15:45:42Z,tx_072
+market_037,Knicks make playoffs,sports,buy,0.38,230,1.15,2025-11-21T09:15:22Z,tx_073
+market_037,Knicks make playoffs,sports,sell,0.32,230,1.10,2025-11-23T12:30:33Z,tx_074
+market_038,Polkadot > $50 by Q1,crypto,buy,0.42,350,1.75,2025-11-22T14:50:45Z,tx_075
+market_038,Polkadot > $50 by Q1,crypto,sell,0.48,350,1.90,2025-11-24T10:15:28Z,tx_076
+market_039,Malaria vaccine success,science,buy,0.58,220,1.10,2025-11-23T08:35:35Z,tx_077
+market_039,Malaria vaccine success,science,sell,0.65,220,1.20,2025-11-25T13:50:42Z,tx_078
+market_040,Tax reform passes,politics,buy,0.52,180,0.90,2025-11-24T12:20:22Z,tx_079
+market_040,Tax reform passes,politics,sell,0.48,180,0.85,2025-11-26T09:35:33Z,tx_080
+market_041,Suns win West Finals,sports,buy,0.45,250,1.25,2025-11-25T10:45:45Z,tx_081
+market_041,Suns win West Finals,sports,sell,0.52,250,1.35,2025-11-27T14:20:28Z,tx_082
+market_042,Uniswap > $30 by Dec,crypto,buy,0.58,280,1.40,2025-11-26T13:35:35Z,tx_083
+market_042,Uniswap > $30 by Dec,crypto,sell,0.52,280,1.35,2025-11-28T08:50:42Z,tx_084
+market_043,Arctic ice study results,science,buy,0.35,360,1.80,2025-11-27T11:20:22Z,tx_085
+market_043,Arctic ice study results,science,sell,0.42,360,1.95,2025-11-29T15:35:33Z,tx_086
+market_044,Infrastructure bill vote,politics,buy,0.68,160,0.80,2025-11-28T09:50:45Z,tx_087
+market_044,Infrastructure bill vote,politics,sell,0.75,160,0.90,2025-11-30T12:15:28Z,tx_088
+market_045,Clippers upset Lakers,sports,buy,0.32,290,1.45,2025-11-29T14:35:35Z,tx_089
+market_045,Clippers upset Lakers,sports,sell,0.28,290,1.40,2025-12-01T10:50:42Z,tx_090
+market_046,AAVE > $500 by EOY,crypto,buy,0.48,320,1.60,2025-11-30T08:20:22Z,tx_091
+market_046,AAVE > $500 by EOY,crypto,sell,0.55,320,1.75,2025-12-02T13:35:33Z,tx_092
+market_047,Asteroid mining announced,science,buy,0.18,480,2.40,2025-12-01T12:45:45Z,tx_093
+market_047,Asteroid mining announced,science,sell,0.22,480,2.55,2025-12-03T09:20:28Z,tx_094
+market_048,Presidential debate impact,politics,buy,0.62,190,0.95,2025-12-02T10:35:35Z,tx_095
+market_048,Presidential debate impact,politics,sell,0.68,190,1.05,2025-12-04T14:50:42Z,tx_096
+market_049,Pacers make playoffs,sports,buy,0.52,210,1.05,2025-12-03T13:20:22Z,tx_097
+market_049,Pacers make playoffs,sports,sell,0.58,210,1.15,2025-12-05T08:35:33Z,tx_098
+market_050,Cosmos > $40 by Q1,crypto,buy,0.45,300,1.50,2025-12-04T11:50:45Z,tx_099
+market_050,Cosmos > $40 by Q1,crypto,sell,0.38,300,1.45,2025-12-06T15:15:28Z,tx_100
+market_051,Gene therapy breakthrough,science,buy,0.55,260,1.30,2025-12-05T09:35:35Z,tx_101
+market_051,Gene therapy breakthrough,science,sell,0.62,260,1.45,2025-12-07T12:50:42Z,tx_102
+market_052,Governor recall vote,politics,buy,0.38,220,1.10,2025-12-06T14:20:22Z,tx_103
+market_052,Governor recall vote,politics,sell,0.42,220,1.15,2025-12-08T10:35:33Z,tx_104
+market_053,Nets win East Finals,sports,buy,0.42,270,1.35,2025-12-07T08:45:45Z,tx_105
+market_053,Nets win East Finals,sports,sell,0.35,270,1.30,2025-12-09T13:20:28Z,tx_106
+market_054,Fantom > $10 by Dec,crypto,buy,0.52,340,1.70,2025-12-08T12:35:35Z,tx_107
+market_054,Fantom > $10 by Dec,crypto,sell,0.48,340,1.65,2025-12-10T09:50:42Z,tx_108
+market_055,Solar efficiency record,science,buy,0.45,300,1.50,2025-12-09T10:20:22Z,tx_109
+market_055,Solar efficiency record,science,sell,0.52,300,1.60,2025-12-11T14:35:33Z,tx_110
+market_056,Trade deal announced,politics,buy,0.72,150,0.75,2025-12-10T13:50:45Z,tx_111
+market_056,Trade deal announced,politics,sell,0.78,150,0.85,2025-12-12T08:15:28Z,tx_112
+market_057,Grizzlies make playoffs,sports,buy,0.58,240,1.20,2025-12-11T11:35:35Z,tx_113
+market_057,Grizzlies make playoffs,sports,sell,0.52,240,1.15,2025-12-13T15:50:42Z,tx_114
+market_058,Algorand > $5 by EOY,crypto,buy,0.42,360,1.80,2025-12-12T09:20:22Z,tx_115
+market_058,Algorand > $5 by EOY,crypto,sell,0.48,360,1.95,2025-12-14T12:35:33Z,tx_116
+market_059,Antimatter experiment,science,buy,0.28,400,2.00,2025-12-13T14:45:45Z,tx_117
+market_059,Antimatter experiment,science,sell,0.32,400,2.10,2025-12-15T10:20:28Z,tx_118
+market_060,Primary election upset,politics,buy,0.32,280,1.40,2025-12-14T08:35:35Z,tx_119
+market_060,Primary election upset,politics,sell,0.28,280,1.35,2025-12-16T13:50:42Z,tx_120
+market_061,Thunder win West,sports,buy,0.48,230,1.15,2025-12-15T12:20:22Z,tx_121
+market_061,Thunder win West,sports,sell,0.55,230,1.25,2025-12-17T09:35:33Z,tx_122
+market_062,VeChain > $1 by Q1,crypto,buy,0.38,380,1.90,2025-12-16T10:50:45Z,tx_123
+market_062,VeChain > $1 by Q1,crypto,sell,0.42,380,2.00,2025-12-18T14:15:28Z,tx_124
+market_063,Battery tech advancement,science,buy,0.62,240,1.20,2025-12-17T13:35:35Z,tx_125
+market_063,Battery tech advancement,science,sell,0.68,240,1.30,2025-12-19T08:50:42Z,tx_126
+market_064,State referendum passes,politics,buy,0.55,200,1.00,2025-12-18T11:20:22Z,tx_127
+market_064,State referendum passes,politics,sell,0.62,200,1.10,2025-12-20T15:35:33Z,tx_128
+market_065,Bulls make playoffs,sports,buy,0.45,260,1.30,2025-12-19T09:45:45Z,tx_129
+market_065,Bulls make playoffs,sports,sell,0.38,260,1.25,2025-12-21T12:20:28Z,tx_130
