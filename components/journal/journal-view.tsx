@@ -58,9 +58,18 @@ export function JournalView() {
   const kpis = calculateKPIs();
 
   return (
-    <div className="h-screen bg-background">
-      {/* Calendar Grid - Full Height */}
-      <div className="h-full px-6 py-6 overflow-auto">
+    <div className="h-screen bg-background flex flex-col">
+      {/* Top Control Bar */}
+      <TopControlBar
+        selectedCategory={selectedCategory}
+        onCategoryChange={setSelectedCategory}
+        kpis={kpis}
+        currentMonth={currentMonth}
+        onMonthChange={setCurrentMonth}
+      />
+
+      {/* Calendar Grid */}
+      <div className="flex-1 overflow-auto px-6 py-6">
         <CalendarGrid
           data={filteredData}
           currentMonth={currentMonth}

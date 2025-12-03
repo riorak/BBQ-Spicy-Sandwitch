@@ -70,34 +70,6 @@ export default function RootLayout({
 
               {/* Main content */}
               <main className="flex-1 min-w-0 overflow-hidden flex flex-col">
-                {/* Top header with tabs and controls */}
-                <div className="border-b border-border/40">
-                  <div className="flex items-center justify-between px-6 py-4">
-                    {/* Left: Page title and tabs */}
-                    <div className="flex items-center gap-6">
-                      <div className="text-xl font-bold">Testing</div>
-                      <div className="flex items-center gap-2 text-sm">
-                        <a className="px-3 py-1.5 rounded-md border-b-2 border-transparent hover:border-border/60" href="/">Dashboard</a>
-                        <a className="px-3 py-1.5 rounded-md border-b-2 border-transparent hover:border-border/60" href="/sessions">Sessions</a>
-                        <a className="px-3 py-1.5 rounded-md border-b-2 border-transparent hover:border-border/60" href="/journal">Journal</a>
-                        <a className="px-3 py-1.5 rounded-md border-b-2 border-transparent hover:border-border/60" href="/protected">Analytics</a>
-                      </div>
-                    </div>
-                    {/* Right: Controls placeholders */}
-                    <div className="flex items-center gap-2">
-                      <select className="px-3 py-1.5 rounded-md border border-border/50 text-sm">
-                        <option>Backtesting</option>
-                        <option>Live</option>
-                      </select>
-                      <select className="px-3 py-1.5 rounded-md border border-border/50 text-sm">
-                        <option>Lifetime</option>
-                        <option>Last 30 days</option>
-                        <option>This month</option>
-                      </select>
-                      <a className="px-3 py-1.5 rounded-md border border-border/50 text-sm" href="/sessions/new">New Session</a>
-                    </div>
-                  </div>
-                </div>
                 {/* Page content */}
                 <div className="flex-1 min-h-0">
                   {children}
