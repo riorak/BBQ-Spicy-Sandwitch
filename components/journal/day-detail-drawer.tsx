@@ -39,19 +39,31 @@ export function DayDetailDrawer({ day, isOpen, onClose }: DayDetailDrawerProps) 
     useEffect(() => {
       if (!lightboxOpen) return;
       const handleKeyDown = (e: KeyboardEvent) => {
+        const maxIndex = (screenshots[selectedTrade?.id] || []).length - 1;
         if (e.key === "ArrowRight") {
-          setLightboxIndex((idx) => idx + 1);
+          setLightboxIndex((idx) => Math.min(idx + 1, maxIndex));
         } else if (e.key === "ArrowLeft") {
-          setLightboxIndex((idx) => idx - 1);
+          setLightboxIndex((idx) => Math.max(idx - 1, 0));
         } else if (e.key === "Escape") {
           setLightboxOpen(false);
         }
       };
       window.addEventListener("keydown", handleKeyDown);
       return () => window.removeEventListener("keydown", handleKeyDown);
-    }, [lightboxOpen]);
+    }, [lightboxOpen, screenshots, selectedTrade?.id]);
   const [uploading, setUploading] = useState(false);
   const [lightboxLoading, setLightboxLoading] = useState(false);
+
+  // Clamp lightbox index when screenshots array changes
+  useEffect(() => {
+    if (!lightboxOpen || !selectedTrade?.id) return;
+    const currentLength = (screenshots[selectedTrade.id] || []).length;
+    if (currentLength === 0) {
+      setLightboxOpen(false);
+    } else if (lightboxIndex >= currentLength) {
+      setLightboxIndex(currentLength - 1);
+    }
+  }, [screenshots, selectedTrade?.id, lightboxOpen]);
 
   const refreshTradeScreenshots = async (tradeId: number) => {
     const urls = screenshots[tradeId] || [];
@@ -132,12 +144,15 @@ export function DayDetailDrawer({ day, isOpen, onClose }: DayDetailDrawerProps) 
     }
   }, [selectedTrade?.id]);
 
-  // Auto-save notes with debounce
+  // Auto-save notes with debounce (only notes, not screenshots to avoid race conditions)
   useEffect(() => {
-    if (!selectedTrade?.id || !tradeNotes[selectedTrade.id]) return;
+    if (!selectedTrade?.id) return;
     
     const timer = setTimeout(() => {
-      saveTradeNotes(selectedTrade.id);
+      // Only save if notes actually changed
+      if (tradeNotes[selectedTrade.id] !== undefined) {
+        saveTradeNotes(selectedTrade.id);
+      }
     }, 1000);
 
     return () => clearTimeout(timer);
@@ -202,10 +217,26 @@ export function DayDetailDrawer({ day, isOpen, onClose }: DayDetailDrawerProps) 
   };
 
   const handleDeleteScreenshot = async (tradeId: number, index: number) => {
-    const updatedScreenshots = [...(screenshots[tradeId] || [])];
-    updatedScreenshots.splice(index, 1);
-    setScreenshots(prev => ({ ...prev, [tradeId]: updatedScreenshots }));
-    await saveTradeNotes(tradeId);
+    const currentScreenshots = [...(screenshots[tradeId] || [])];
+    currentScreenshots.splice(index, 1);
+    
+    // Update state immediately
+    setScreenshots(prev => ({ ...prev, [tradeId]: currentScreenshots }));
+    
+    // Save with the updated array explicitly
+    try {
+      await fetch("/app/api/journal/trade-notes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          trade_id: tradeId,
+          notes: tradeNotes[tradeId] || "",
+          screenshots: currentScreenshots,
+        }),
+      });
+    } catch (error) {
+      console.error("Failed to save after delete:", error);
+    }
   };
 
   const handleAIAnalysis = async (tradeId: number) => {
