@@ -51,6 +51,49 @@ export function DayDetailDrawer({ day, isOpen, onClose }: DayDetailDrawerProps) 
       return () => window.removeEventListener("keydown", handleKeyDown);
     }, [lightboxOpen]);
   const [uploading, setUploading] = useState(false);
+  const [lightboxLoading, setLightboxLoading] = useState(false);
+
+  const refreshTradeScreenshots = async (tradeId: number) => {
+    const urls = screenshots[tradeId] || [];
+    if (urls.length === 0) return;
+    try {
+      const refreshRes = await fetch("/app/api/journal/refresh-signed-urls", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ paths: urls }),
+      });
+      if (refreshRes.ok) {
+        const { urls: newUrls } = await refreshRes.json();
+        setScreenshots(prev => ({ ...prev, [tradeId]: newUrls }));
+      }
+    } catch (e) {
+      // no-op
+    }
+  };
+
+  // Preload images when opening lightbox for smoother UX
+  useEffect(() => {
+    if (!lightboxOpen || !selectedTrade?.id) return;
+    setLightboxLoading(true);
+    const urls = screenshots[selectedTrade.id] || [];
+    let loaded = 0;
+    urls.forEach((u) => {
+      const img = new Image();
+      img.onload = () => {
+        loaded += 1;
+        if (loaded >= Math.min(2, urls.length)) {
+          setLightboxLoading(false);
+        }
+      };
+      img.onerror = () => {
+        // On preload error, try refreshing all URLs
+        refreshTradeScreenshots(selectedTrade.id);
+      };
+      img.src = u;
+    });
+    // Also refresh signed URLs on open to reduce expiry issues
+    refreshTradeScreenshots(selectedTrade.id);
+  }, [lightboxOpen, selectedTrade?.id]);
 
   // Fetch detailed data when day changes
   useEffect(() => {
@@ -380,7 +423,8 @@ export function DayDetailDrawer({ day, isOpen, onClose }: DayDetailDrawerProps) 
                           <img
                             src={url}
                             alt={`Screenshot ${i + 1}`}
-                            className="object-contain w-full h-24"
+                              className="object-contain w-full h-24"
+                              onError={() => refreshTradeScreenshots(selectedTrade.id)}
                           />
                         </button>
                       ))}
@@ -389,38 +433,61 @@ export function DayDetailDrawer({ day, isOpen, onClose }: DayDetailDrawerProps) 
 
       {/* Lightbox Modal */}
       {lightboxOpen && screenshots[selectedTrade.id] && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80" onClick={() => setLightboxOpen(false)}>
-          <div className="relative max-w-2xl w-full flex flex-col items-center" onClick={e => e.stopPropagation()}>
+        <div className="fixed inset-0 z-[100] bg-black/90" onClick={() => setLightboxOpen(false)}>
+          <div className="relative w-full h-full flex items-center justify-center" onClick={e => e.stopPropagation()}>
+            {/* Image */}
+            {lightboxLoading && (
+              <div className="absolute top-4 left-1/2 -translate-x-1/2 text-white/70 text-xs">Loading…</div>
+            )}
             <img
               src={screenshots[selectedTrade.id][lightboxIndex]}
               alt={`Screenshot ${lightboxIndex + 1}`}
-              className="object-contain max-h-[80vh] w-full rounded shadow-lg bg-black"
+              className="object-contain max-h-[90vh] max-w-[95vw] w-auto h-auto"
+              onError={async () => {
+                await refreshTradeScreenshots(selectedTrade.id);
+                // keep index stable after refresh
+                setLightboxIndex((idx) => {
+                  const total = (screenshots[selectedTrade.id] || []).length;
+                  return Math.min(Math.max(0, idx), Math.max(0, total - 1));
+                });
+              }}
             />
-            <div className="flex justify-between w-full mt-4">
-              <button
-                type="button"
-                className="px-4 py-2 bg-white/10 text-white rounded disabled:opacity-30"
-                disabled={lightboxIndex === 0}
-                onClick={() => setLightboxIndex(idx => Math.max(0, idx - 1))}
-              >
-                ← Prev
-              </button>
-              <span className="text-white text-sm">{lightboxIndex + 1} / {screenshots[selectedTrade.id].length}</span>
-              <button
-                type="button"
-                className="px-4 py-2 bg-white/10 text-white rounded disabled:opacity-30"
-                disabled={lightboxIndex === screenshots[selectedTrade.id].length - 1}
-                onClick={() => setLightboxIndex(idx => Math.min(screenshots[selectedTrade.id].length - 1, idx + 1))}
-              >
-                Next →
-              </button>
-            </div>
+
+            {/* Left arrow */}
             <button
               type="button"
-              className="absolute top-2 right-2 text-white bg-black/60 rounded-full p-2"
+              aria-label="Previous"
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-white/80 hover:text-white px-2 py-1 rounded"
+              disabled={lightboxIndex === 0}
+              onClick={() => setLightboxIndex(idx => Math.max(0, idx - 1))}
+            >
+              <span className="text-2xl">‹</span>
+            </button>
+
+            {/* Right arrow */}
+            <button
+              type="button"
+              aria-label="Next"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-white/80 hover:text-white px-2 py-1 rounded"
+              disabled={lightboxIndex === screenshots[selectedTrade.id].length - 1}
+              onClick={() => setLightboxIndex(idx => Math.min(screenshots[selectedTrade.id].length - 1, idx + 1))}
+            >
+              <span className="text-2xl">›</span>
+            </button>
+
+            {/* Counter */}
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-white/80 text-xs">
+              {lightboxIndex + 1} / {screenshots[selectedTrade.id].length}
+            </div>
+
+            {/* Close */}
+            <button
+              type="button"
+              aria-label="Close"
+              className="absolute top-4 right-4 text-white/80 hover:text-white"
               onClick={() => setLightboxOpen(false)}
             >
-              <X className="h-6 w-6" />
+              ✕
             </button>
           </div>
         </div>
