@@ -1,106 +1,36 @@
-# BBQ Spicy Sandwich - AI Agent Instructions
+# Copilot Instructions for BBQ-Spicy-Sandwitch
 
 ## Project Overview
-Next.js 15+ starter template with Supabase authentication using cookie-based sessions via `@supabase/ssr`. Full-stack TypeScript app with App Router, Server Components, and shadcn/ui components.
+This is a Next.js + Supabase starter kit, designed for rapid development of full-stack web apps. It uses the Next.js App Router, Supabase for authentication and data, Tailwind CSS for styling, and shadcn/ui for UI components. The project is structured for clarity and modularity, with clear separation between app pages, API routes, components, and utility libraries.
 
-## Architecture & Key Patterns
+## Key Architecture & Patterns
+- **App Directory Structure**: All main pages and API routes are under `app/`. Subfolders like `journal`, `auth`, and `profile` represent feature areas. API endpoints are in `app/api/*`.
+- **Components**: Shared and feature-specific React components are in `components/`, with further grouping (e.g., `journal/`, `tutorial/`, `ui/`). Use these for UI consistency.
+- **Supabase Integration**: Supabase client setup is in `lib/supabase/client.ts`. Server-side logic is in `lib/supabase/server.ts`. Use these for all database/auth interactions.
+- **Styling**: Tailwind CSS is configured via `tailwind.config.ts` and `postcss.config.mjs`. UI components use shadcn/ui patterns.
+- **Environment Variables**: Store Supabase keys in `.env.local` (see README for details). Use `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`.
+- **Data Flow**: API routes in `app/api/` handle backend logic (e.g., CSV import, journal stats). Frontend pages fetch data via Supabase client or these APIs.
 
-### Supabase Client Usage (CRITICAL)
-Never store Supabase clients in global variables—especially important for Fluid compute. Always create fresh clients per function:
+## Developer Workflows
+- **Local Development**: Run with `npm run dev` (Next.js dev server at `localhost:3000`).
+- **Testing**: Test CSV files are in `test/`. No formal test runner is present; add tests in this folder or use your preferred framework.
+- **UI Customization**: To change shadcn/ui styles, delete `components.json` and follow [shadcn/ui docs](https://ui.shadcn.com/docs/installation/next).
+- **Schema Management**: Supabase SQL schemas are in `supabase/`. Update these files and apply changes via Supabase dashboard.
 
-**Server Components & Route Handlers:**
-```typescript
-import { createClient } from "@/lib/supabase/server";
-const supabase = await createClient(); // Note: async
-```
+## Project-Specific Conventions
+- **API Route Structure**: Use Next.js route handlers (`route.ts`) for backend logic. Organize by feature (e.g., `journal/day-detail/route.ts`).
+- **Component Grouping**: Place reusable UI in `components/ui/`, feature logic in subfolders (e.g., `components/journal/`).
+- **Proxy Usage**: `proxy.ts` and `lib/supabase/proxy.ts` are for advanced routing or Supabase proxying.
+- **Auth Flows**: Auth pages and logic are in `app/auth/` and related components.
 
-**Client Components:**
-```typescript
-import { createClient } from "@/lib/supabase/client";
-const supabase = createClient(); // Synchronous
-```
+## Integration Points
+- **Supabase**: All data/auth flows use Supabase. See `lib/supabase/` and environment setup.
+- **Vercel**: Project is optimized for Vercel deployment; environment variables are auto-assigned if using Supabase integration.
 
-**Middleware/Proxy:**
-Use `@/lib/supabase/proxy` for session management. See `proxy.ts` at root.
+## Examples
+- To add a new journal API endpoint: create `app/api/journal/new-endpoint/route.ts`.
+- To add a new UI component: add to `components/ui/` and import in your page/component.
+- To update Supabase schema: edit `supabase/schema.sql` and apply via dashboard.
 
-### Server vs Client Component Patterns
-- **Server Components (default):** Auth checks, data fetching, layouts. Use `@/lib/supabase/server`.
-- **Client Components (`"use client"`):** Forms, interactive UI, theme switching. Use `@/lib/supabase/client`.
-- Auth components like `AuthButton` are Server Components that render Client Components (e.g., `LogoutButton`) for interactive parts.
-
-### Authentication Flow
-1. **Protected routes:** Middleware in `proxy.ts` redirects unauthenticated users to `/auth/login`
-2. **Session refresh:** `lib/supabase/proxy.ts` `updateSession()` handles cookie-based auth—never modify between `createServerClient` and `getClaims()`
-3. **Email confirmation:** Sign-up requires email verification; callback handled in `app/auth/callback/route.ts`
-4. **User checks:** Use `supabase.auth.getClaims()` (fast) over `getUser()` in protected pages
-
-### Routing Structure
-```
-app/
-  auth/        # Public auth pages (login, sign-up, forgot-password)
-  protected/   # Auth-required pages with shared layout
-proxy.ts       # Middleware config at root (not in app/)
-```
-
-### Component & Styling Conventions
-- **shadcn/ui:** UI components in `components/ui/`. Use existing components; configured in `components.json`
-- **Styling:** Tailwind CSS with CSS variables for theming (see `app/globals.css`). Dark mode via `next-themes`
-- **Utility:** `cn()` helper (`lib/utils.ts`) for conditional class merging: `cn("base-classes", condition && "conditional-classes")`
-- **Path aliases:** `@/*` maps to root (`tsconfig.json`)
-
-### Form Handling Pattern
-Authentication forms (`login-form.tsx`, `sign-up-form.tsx`) follow this pattern:
-```typescript
-"use client";
-const [isLoading, setIsLoading] = useState(false);
-const supabase = createClient(); // Client-side supabase
-// Handle form submission with loading state and error handling
-// Redirect with router.push() after success
-```
-
-## Development Workflow
-
-### Setup
-```bash
-npm install
-npm run dev          # Start dev server on :3000
-```
-
-**Environment:** Requires `.env.local` with:
-- `NEXT_PUBLIC_SUPABASE_URL`
-- `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (or legacy `ANON_KEY`)
-
-### Build & Lint
-```bash
-npm run build        # Production build
-npm run start        # Run production build
-npm run lint         # ESLint check
-```
-
-## Common Tasks
-
-### Adding Protected Pages
-1. Create page in `app/protected/` directory
-2. Use server-side Supabase client for auth checks
-3. Redirect to login if `getClaims()` returns no user (see `app/protected/page.tsx`)
-
-### Adding Auth Forms
-- Extend existing pattern from `components/*-form.tsx`
-- Mark as `"use client"`
-- Use client-side Supabase client
-- Handle loading states and errors consistently
-
-### Adding UI Components
-- Use shadcn/ui CLI: `npx shadcn@latest add <component>`
-- Components auto-install to `components/ui/`
-- Already configured: button, card, input, label, checkbox, dropdown-menu
-
-### Modifying Auth Redirects
-Edit `lib/supabase/proxy.ts` `updateSession()` function. CRITICAL: Never add code between `createServerClient` and `getClaims()` calls.
-
-## Important Gotchas
-- **Cookie management:** Must return the exact `supabaseResponse` from middleware to avoid session termination
-- **Environment check:** `hasEnvVars` in `lib/utils.ts` validates Supabase config
-- **Proxy matcher:** Configure protected paths in `proxy.ts` config.matcher (excludes static files by default)
-- **TypeScript strict mode:** Enabled—handle null checks for auth user objects
-- **React 19:** Uses latest React with new JSX transform (`react-jsx`)
+---
+For more details, see `README.md` and referenced docs. If any conventions or workflows are unclear, please ask for clarification or provide feedback to improve these instructions.

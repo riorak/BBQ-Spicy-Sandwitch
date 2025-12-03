@@ -32,6 +32,24 @@ export function DayDetailDrawer({ day, isOpen, onClose }: DayDetailDrawerProps) 
   const [tradeNotes, setTradeNotes] = useState<Record<number, string>>({});
   const [showAIAnalysis, setShowAIAnalysis] = useState<Record<number, boolean>>({});
   const [screenshots, setScreenshots] = useState<Record<number, string[]>>({});
+  // Lightbox state
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
+    // Keyboard navigation for lightbox
+    useEffect(() => {
+      if (!lightboxOpen) return;
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === "ArrowRight") {
+          setLightboxIndex((idx) => idx + 1);
+        } else if (e.key === "ArrowLeft") {
+          setLightboxIndex((idx) => idx - 1);
+        } else if (e.key === "Escape") {
+          setLightboxOpen(false);
+        }
+      };
+      window.addEventListener("keydown", handleKeyDown);
+      return () => window.removeEventListener("keydown", handleKeyDown);
+    }, [lightboxOpen]);
   const [uploading, setUploading] = useState(false);
 
   // Fetch detailed data when day changes
@@ -350,15 +368,63 @@ export function DayDetailDrawer({ day, isOpen, onClose }: DayDetailDrawerProps) 
                   {screenshots[selectedTrade.id] && screenshots[selectedTrade.id].length > 0 && (
                     <div className="mt-3 grid grid-cols-2 gap-2">
                       {screenshots[selectedTrade.id].map((url, i) => (
-                        <img
+                        <button
                           key={i}
-                          src={url}
-                          alt={`Screenshot ${i + 1}`}
-                          className="rounded border border-border/50 w-full h-24 object-cover"
-                        />
+                          type="button"
+                          className="rounded border border-border/50 w-full h-24 bg-black/5 flex items-center justify-center p-0"
+                          onClick={() => {
+                            setLightboxIndex(i);
+                            setLightboxOpen(true);
+                          }}
+                        >
+                          <img
+                            src={url}
+                            alt={`Screenshot ${i + 1}`}
+                            className="object-contain w-full h-24"
+                          />
+                        </button>
                       ))}
                     </div>
                   )}
+
+      {/* Lightbox Modal */}
+      {lightboxOpen && screenshots[selectedTrade.id] && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80" onClick={() => setLightboxOpen(false)}>
+          <div className="relative max-w-2xl w-full flex flex-col items-center" onClick={e => e.stopPropagation()}>
+            <img
+              src={screenshots[selectedTrade.id][lightboxIndex]}
+              alt={`Screenshot ${lightboxIndex + 1}`}
+              className="object-contain max-h-[80vh] w-full rounded shadow-lg bg-black"
+            />
+            <div className="flex justify-between w-full mt-4">
+              <button
+                type="button"
+                className="px-4 py-2 bg-white/10 text-white rounded disabled:opacity-30"
+                disabled={lightboxIndex === 0}
+                onClick={() => setLightboxIndex(idx => Math.max(0, idx - 1))}
+              >
+                ← Prev
+              </button>
+              <span className="text-white text-sm">{lightboxIndex + 1} / {screenshots[selectedTrade.id].length}</span>
+              <button
+                type="button"
+                className="px-4 py-2 bg-white/10 text-white rounded disabled:opacity-30"
+                disabled={lightboxIndex === screenshots[selectedTrade.id].length - 1}
+                onClick={() => setLightboxIndex(idx => Math.min(screenshots[selectedTrade.id].length - 1, idx + 1))}
+              >
+                Next →
+              </button>
+            </div>
+            <button
+              type="button"
+              className="absolute top-2 right-2 text-white bg-black/60 rounded-full p-2"
+              onClick={() => setLightboxOpen(false)}
+            >
+              <X className="h-6 w-6" />
+            </button>
+          </div>
+        </div>
+      )}
                 </div>
 
                 {/* AI Analysis */}
