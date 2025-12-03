@@ -71,29 +71,26 @@ export function DayDetailDrawer({ day, isOpen, onClose }: DayDetailDrawerProps) 
     }
   };
 
-  // Preload images when opening lightbox for smoother UX
+  // Preload current image when opening lightbox for smoother UX
   useEffect(() => {
     if (!lightboxOpen || !selectedTrade?.id) return;
     setLightboxLoading(true);
     const urls = screenshots[selectedTrade.id] || [];
-    let loaded = 0;
-    urls.forEach((u) => {
-      const img = new Image();
-      img.onload = () => {
-        loaded += 1;
-        if (loaded >= Math.min(2, urls.length)) {
-          setLightboxLoading(false);
-        }
-      };
-      img.onerror = () => {
-        // On preload error, try refreshing all URLs
-        refreshTradeScreenshots(selectedTrade.id);
-      };
-      img.src = u;
-    });
+    if (urls.length === 0) {
+      setLightboxLoading(false);
+      return;
+    }
+    // Only preload the current image
+    const img = new Image();
+    img.onload = () => setLightboxLoading(false);
+    img.onerror = () => {
+      refreshTradeScreenshots(selectedTrade.id);
+      setLightboxLoading(false);
+    };
+    img.src = urls[lightboxIndex];
     // Also refresh signed URLs on open to reduce expiry issues
     refreshTradeScreenshots(selectedTrade.id);
-  }, [lightboxOpen, selectedTrade?.id]);
+  }, [lightboxOpen, selectedTrade?.id, lightboxIndex]);
 
   // Fetch detailed data when day changes
   useEffect(() => {
@@ -202,6 +199,13 @@ export function DayDetailDrawer({ day, isOpen, onClose }: DayDetailDrawerProps) 
       console.error("Failed to upload screenshots:", error);
     }
     setUploading(false);
+  };
+
+  const handleDeleteScreenshot = async (tradeId: number, index: number) => {
+    const updatedScreenshots = [...(screenshots[tradeId] || [])];
+    updatedScreenshots.splice(index, 1);
+    setScreenshots(prev => ({ ...prev, [tradeId]: updatedScreenshots }));
+    await saveTradeNotes(tradeId);
   };
 
   const handleAIAnalysis = async (tradeId: number) => {
@@ -411,22 +415,35 @@ export function DayDetailDrawer({ day, isOpen, onClose }: DayDetailDrawerProps) 
                   {screenshots[selectedTrade.id] && screenshots[selectedTrade.id].length > 0 && (
                     <div className="mt-3 grid grid-cols-2 gap-2">
                       {screenshots[selectedTrade.id].map((url, i) => (
-                        <button
-                          key={i}
-                          type="button"
-                          className="rounded border border-border/50 w-full h-24 bg-black/5 flex items-center justify-center p-0"
-                          onClick={() => {
-                            setLightboxIndex(i);
-                            setLightboxOpen(true);
-                          }}
-                        >
-                          <img
-                            src={url}
-                            alt={`Screenshot ${i + 1}`}
+                        <div key={i} className="relative group">
+                          <button
+                            type="button"
+                            className="rounded border border-border/50 w-full h-24 bg-black/5 flex items-center justify-center p-0"
+                            onClick={() => {
+                              setLightboxIndex(i);
+                              setLightboxOpen(true);
+                            }}
+                          >
+                            <img
+                              src={url}
+                              alt={`Screenshot ${i + 1}`}
+                              loading="lazy"
                               className="object-contain w-full h-24"
                               onError={() => refreshTradeScreenshots(selectedTrade.id)}
-                          />
-                        </button>
+                            />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteScreenshot(selectedTrade.id, i);
+                            }}
+                            className="absolute top-1 right-1 bg-black/60 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-xs hover:bg-red-600"
+                            aria-label="Delete screenshot"
+                          >
+                            ✕
+                          </button>
+                        </div>
                       ))}
                     </div>
                   )}
