@@ -1,6 +1,6 @@
 "use client";
 
-import type { JournalDay } from "./mock-data";
+import type { JournalDay } from "./journal-view";
 
 interface CalendarGridProps {
   data: JournalDay[];

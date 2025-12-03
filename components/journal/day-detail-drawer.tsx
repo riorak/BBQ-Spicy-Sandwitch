@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { X, Sparkles, Upload, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import type { JournalDay, Trade } from "./mock-data";
+import type { JournalDay, Trade } from "./journal-view";
 
 interface DayDetailDrawerProps {
   day: JournalDay | null;
@@ -28,6 +28,22 @@ const categoryLabels: Record<string, string> = {
 export function DayDetailDrawer({ day, isOpen, onClose }: DayDetailDrawerProps) {
   const [notes, setNotes] = useState(day?.notes || "");
   const [showAIAnalysis, setShowAIAnalysis] = useState(false);
+  const [detailData, setDetailData] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+
+  // Fetch detailed data when day changes
+  useEffect(() => {
+    if (day?.date) {
+      setLoading(true);
+      fetch(`/app/api/journal/day-detail?date=${day.date}`)
+        .then(res => res.json())
+        .then(data => {
+          setDetailData(data);
+          setLoading(false);
+        })
+        .catch(() => setLoading(false));
+    }
+  }, [day?.date]);
 
   if (!day) return null;
 
@@ -49,14 +65,9 @@ export function DayDetailDrawer({ day, isOpen, onClose }: DayDetailDrawerProps) 
     return `${amount >= 0 ? "+" : ""}$${amount.toFixed(2)}`;
   };
 
-  // Group trades by category
-  const tradesByCategory: Record<string, Trade[]> = {};
-  day.trades.forEach((trade) => {
-    if (!tradesByCategory[trade.category]) {
-      tradesByCategory[trade.category] = [];
-    }
-    tradesByCategory[trade.category].push(trade);
-  });
+  // Use trades from detailData if available
+  const trades = detailData?.trades || {};
+  const tradesByCategory: Record<string, any[]> = trades;
 
   return (
     <>
@@ -106,7 +117,7 @@ export function DayDetailDrawer({ day, isOpen, onClose }: DayDetailDrawerProps) 
                 </div>
                 <div>
                   <span className="text-muted-foreground text-xs uppercase tracking-wider">Trades</span>
-                  <p className="text-xl font-semibold mt-0.5">{day.trades.length}</p>
+                  <p className="text-xl font-semibold mt-0.5">{Object.values(tradesByCategory).flat().length}</p>
                 </div>
               </div>
             </div>
