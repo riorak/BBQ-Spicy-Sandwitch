@@ -6,9 +6,15 @@ export async function POST(request: Request) {
   const supabase = await createClient();
   const { data: claims } = await supabase.auth.getClaims();
   const userId = claims?.claims?.sub;
+  const userEmail = claims?.claims?.email;
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+
+  // Ensure user row exists in public.users
+  await supabase
+    .from("users")
+    .upsert({ id: userId, email: userEmail }, { onConflict: "id" });
 
   const contentType = request.headers.get("content-type") || "";
   if (!contentType.includes("multipart/form-data")) {
