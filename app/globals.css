@@ -64,5 +64,15 @@
   }
   body {
     @apply bg-background text-foreground;
+    background-image: radial-gradient(ellipse at top left, hsl(var(--secondary)) 0%, transparent 40%), radial-gradient(ellipse at bottom right, hsl(var(--secondary)) 0%, transparent 40%);
+  }
+}
+
+@layer components {
+  .card {
+    @apply rounded-xl border border-border/40 bg-secondary/20 backdrop-blur-sm;
+  }
+  .kpi {
+    @apply rounded-lg border border-border/50 bg-secondary/30 px-4 py-3;
   }
 }
