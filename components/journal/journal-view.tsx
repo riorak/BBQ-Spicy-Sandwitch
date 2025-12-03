@@ -69,7 +69,7 @@ export function JournalView() {
       />
 
       {/* Calendar Grid */}
-      <div className="container mx-auto px-4 py-6 flex-1 overflow-hidden min-h-0">
+      <div className="container mx-auto px-6 py-6 flex-1 overflow-hidden min-h-0">
         <CalendarGrid
           data={filteredData}
           currentMonth={currentMonth}

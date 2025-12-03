@@ -60,11 +60,11 @@ export function CalendarGrid({ data, currentMonth, onDayClick }: CalendarGridPro
   return (
     <div className="w-full h-full flex flex-col min-h-0">
       {/* Day of week headers */}
-      <div className="grid grid-cols-7 gap-2 mb-2 shrink-0">
+      <div className="grid grid-cols-7 gap-2 mb-3 shrink-0">
         {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
           <div
             key={day}
-            className="text-center text-sm font-medium text-muted-foreground py-2"
+            className="text-center text-xs font-bold text-muted-foreground/60 uppercase tracking-wider py-2"
           >
             {day}
           </div>
@@ -86,32 +86,32 @@ export function CalendarGrid({ data, currentMonth, onDayClick }: CalendarGridPro
               key={day.date}
               onClick={() => day.data && onDayClick(day.data)}
               disabled={!hasData}
-              className={`w-full h-full rounded-lg border border-border p-2 relative transition-all ${
+              className={`w-full h-full rounded-lg border p-3 relative transition-all group ${
                 hasData
-                  ? "cursor-pointer hover:scale-105 hover:shadow-lg"
-                  : "cursor-default opacity-40"
+                  ? "cursor-pointer hover:scale-[1.02] hover:shadow-lg border-border/60 hover:border-primary/40"
+                  : "cursor-default opacity-30 border-border/30"
               }`}
               style={{
                 backgroundColor: hasData
                   ? day.data!.pnl > 0
-                    ? `rgba(34, 197, 94, ${opacity})`
+                    ? `rgba(34, 197, 94, ${opacity * 0.6})`
                     : day.data!.pnl < 0
-                    ? `rgba(239, 68, 68, ${opacity})`
-                    : `rgba(107, 114, 128, ${opacity})`
+                    ? `rgba(239, 68, 68, ${opacity * 0.6})`
+                    : `rgba(107, 114, 128, ${opacity * 0.4})`
                   : "transparent",
               }}
             >
-              {/* Date number */}
-              <div className="absolute top-2 left-2 text-sm font-medium">
+              {/* Date number - top left */}
+              <div className="absolute top-2 left-2.5 text-xs font-bold text-foreground/70">
                 {day.date}
               </div>
 
-              {/* PnL */}
+              {/* PnL - center */}
               {hasData && (
                 <div className="flex flex-col items-center justify-center h-full">
                   <div
-                    className={`text-lg font-bold ${
-                      day.data!.pnl > 0 ? "text-green-400" : "text-red-400"
+                    className={`text-xl font-bold transition-transform group-hover:scale-105 ${
+                      day.data!.pnl > 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"
                     }`}
                   >
                     {day.data!.pnl > 0 ? "+" : ""}$
@@ -120,13 +120,13 @@ export function CalendarGrid({ data, currentMonth, onDayClick }: CalendarGridPro
                 </div>
               )}
 
-              {/* Category dots */}
+              {/* Category dots - bottom right */}
               {hasData && day.data!.categories.length > 0 && (
                 <div className="absolute bottom-2 right-2 flex gap-1">
                   {day.data!.categories.map((cat) => (
                     <div
                       key={cat}
-                      className={`w-2 h-2 rounded-full ${categoryColors[cat]}`}
+                      className={`w-1.5 h-1.5 rounded-full ${categoryColors[cat]}`}
                       title={cat}
                     />
                   ))}
