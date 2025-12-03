@@ -5,7 +5,7 @@ create table if not exists public.trade_notes (
   user_id uuid references public.users(id) on delete cascade,
   trade_id bigint references public.trades(id) on delete cascade,
   notes text,
-  screenshots text[] default '{}',
+  screenshots text[] default array[]::text[],
   ai_analysis jsonb,
   updated_at timestamp with time zone default now(),
   unique (user_id, trade_id)

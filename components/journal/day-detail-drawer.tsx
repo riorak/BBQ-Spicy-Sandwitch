@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { X, Sparkles, Upload, AlertTriangle, ChevronRight, Save } from "lucide-react";
+import { X, Sparkles, Upload, AlertTriangle, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { JournalDay, Trade } from "./journal-view";
 
@@ -31,7 +31,8 @@ export function DayDetailDrawer({ day, isOpen, onClose }: DayDetailDrawerProps) 
   const [selectedTrade, setSelectedTrade] = useState<any>(null);
   const [tradeNotes, setTradeNotes] = useState<Record<number, string>>({});
   const [showAIAnalysis, setShowAIAnalysis] = useState<Record<number, boolean>>({});
-  const [savingNotes, setSavingNotes] = useState(false);
+  const [screenshots, setScreenshots] = useState<Record<number, string[]>>({});
+  const [uploading, setUploading] = useState(false);
 
   // Fetch detailed data when day changes
   useEffect(() => {
@@ -53,12 +54,36 @@ export function DayDetailDrawer({ day, isOpen, onClose }: DayDetailDrawerProps) 
     if (selectedTrade?.id) {
       fetch(`/app/api/journal/trade-notes?trade_id=${selectedTrade.id}`)
         .then(res => res.json())
-        .then(data => {
+        .then(async (data) => {
           setTradeNotes(prev => ({ ...prev, [selectedTrade.id]: data.notes || "" }));
+          
+          // Refresh signed URLs for screenshots
+          if (data.screenshots && data.screenshots.length > 0) {
+            const refreshRes = await fetch("/app/api/journal/refresh-signed-urls", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ paths: data.screenshots }),
+            });
+            if (refreshRes.ok) {
+              const { urls } = await refreshRes.json();
+              setScreenshots(prev => ({ ...prev, [selectedTrade.id]: urls }));
+            }
+          }
         })
         .catch(() => {});
     }
   }, [selectedTrade?.id]);
+
+  // Auto-save notes with debounce
+  useEffect(() => {
+    if (!selectedTrade?.id || !tradeNotes[selectedTrade.id]) return;
+    
+    const timer = setTimeout(() => {
+      saveTradeNotes(selectedTrade.id);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [tradeNotes, selectedTrade?.id]);
 
   if (!day) return null;
 
@@ -81,23 +106,41 @@ export function DayDetailDrawer({ day, isOpen, onClose }: DayDetailDrawerProps) 
   };
 
   const saveTradeNotes = async (tradeId: number) => {
-    setSavingNotes(true);
     try {
-      const res = await fetch("/app/api/journal/trade-notes", {
+      await fetch("/app/api/journal/trade-notes", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           trade_id: tradeId,
           notes: tradeNotes[tradeId] || "",
+          screenshots: screenshots[tradeId] || [],
         }),
       });
-      if (res.ok) {
-        // Success feedback could be added here
-      }
     } catch (error) {
       console.error("Failed to save notes:", error);
     }
-    setSavingNotes(false);
+  };
+
+  const handleScreenshotUpload = async (tradeId: number, files: FileList) => {
+    setUploading(true);
+    const formData = new FormData();
+    Array.from(files).forEach(file => formData.append("files", file));
+    formData.append("trade_id", tradeId.toString());
+
+    try {
+      const res = await fetch("/app/api/journal/upload-screenshots", {
+        method: "POST",
+        body: formData,
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setScreenshots(prev => ({ ...prev, [tradeId]: [...(prev[tradeId] || []), ...data.urls] }));
+        await saveTradeNotes(tradeId);
+      }
+    } catch (error) {
+      console.error("Failed to upload screenshots:", error);
+    }
+    setUploading(false);
   };
 
   const handleAIAnalysis = async (tradeId: number) => {
@@ -268,6 +311,9 @@ export function DayDetailDrawer({ day, isOpen, onClose }: DayDetailDrawerProps) 
                 <div>
                   <label className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-3 block">
                     Trade Notes
+                    <span className="text-xs normal-case text-muted-foreground/60 ml-2 font-normal">
+                      (Auto-saves)
+                    </span>
                   </label>
                   <textarea
                     value={tradeNotes[selectedTrade.id] || ""}
@@ -277,15 +323,6 @@ export function DayDetailDrawer({ day, isOpen, onClose }: DayDetailDrawerProps) 
                     placeholder="What was your thesis? What did you learn?"
                     className="w-full min-h-[120px] p-4 rounded-lg bg-secondary/20 border border-border/50 resize-none focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-transparent text-sm"
                   />
-                  <Button
-                    onClick={() => saveTradeNotes(selectedTrade.id)}
-                    disabled={savingNotes}
-                    size="sm"
-                    className="mt-2"
-                  >
-                    <Save className="h-4 w-4 mr-2" />
-                    {savingNotes ? "Saving..." : "Save Notes"}
-                  </Button>
                 </div>
 
                 {/* Screenshot Upload */}
@@ -293,12 +330,35 @@ export function DayDetailDrawer({ day, isOpen, onClose }: DayDetailDrawerProps) 
                   <label className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-3 block">
                     Screenshots
                   </label>
-                  <div className="border-2 border-dashed border-border/50 rounded-lg p-6 text-center hover:border-primary/30 hover:bg-secondary/10 transition-all cursor-pointer">
+                  <input
+                    type="file"
+                    id={`screenshot-${selectedTrade.id}`}
+                    multiple
+                    accept="image/*"
+                    onChange={(e) => e.target.files && handleScreenshotUpload(selectedTrade.id, e.target.files)}
+                    className="hidden"
+                  />
+                  <label
+                    htmlFor={`screenshot-${selectedTrade.id}`}
+                    className="border-2 border-dashed border-border/50 rounded-lg p-6 text-center hover:border-primary/30 hover:bg-secondary/10 transition-all cursor-pointer block"
+                  >
                     <Upload className="h-6 w-6 mx-auto mb-2 text-muted-foreground/60" />
                     <p className="text-xs text-muted-foreground">
-                      Drag and drop or click to upload
+                      {uploading ? "Uploading..." : "Click to upload screenshots"}
                     </p>
-                  </div>
+                  </label>
+                  {screenshots[selectedTrade.id] && screenshots[selectedTrade.id].length > 0 && (
+                    <div className="mt-3 grid grid-cols-2 gap-2">
+                      {screenshots[selectedTrade.id].map((url, i) => (
+                        <img
+                          key={i}
+                          src={url}
+                          alt={`Screenshot ${i + 1}`}
+                          className="rounded border border-border/50 w-full h-24 object-cover"
+                        />
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 {/* AI Analysis */}
