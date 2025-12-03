@@ -8,51 +8,35 @@ import { Suspense } from "react";
 
 export default function Home() {
   return (
-    <main className="min-h-screen flex flex-col items-center">
-      <div className="flex-1 w-full flex flex-col gap-20 items-center">
-        <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
-          <div className="w-full max-w-5xl flex justify-between items-center p-3 px-5 text-sm">
-            <div className="flex gap-5 items-center font-semibold">
-              <Link href={"/"}>Polyedge</Link>
-            </div>
-            {!hasEnvVars ? (
-              <EnvVarWarning />
-            ) : (
-              <Suspense>
-                <AuthButton />
-              </Suspense>
-            )}
-          </div>
-        </nav>
-        <div className="flex-1 flex flex-col gap-20 max-w-5xl p-5 w-full">
-          <div className="flex flex-col gap-8 items-center justify-center text-center mt-20">
-            <h1 className="text-4xl md:text-6xl font-bold">
-              Polyedge
-            </h1>
-            <p className="text-xl text-muted-foreground">
-              Your Polymarket companion
-            </p>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-12 w-full max-w-2xl">
-              <Button size="lg" variant="default" asChild>
-                <Link href="/protected">Dashboard</Link>
-              </Button>
-              <Button size="lg" variant="default" asChild>
-                <Link href="/journal">Journal</Link>
-              </Button>
-              <Button size="lg" variant="default">
-                Market Analysis
-              </Button>
-              <Button size="lg" variant="default">
-                Polymarket Terminal
-              </Button>
-            </div>
-          </div>
-        </div>
+    <main className="min-h-screen flex flex-col items-center justify-center relative">
+      {/* Auth Elements - Top Right */}
+      <div className="absolute top-4 right-4">
+        {!hasEnvVars ? (
+          <EnvVarWarning />
+        ) : (
+          <Suspense>
+            <AuthButton />
+          </Suspense>
+        )}
+      </div>
 
-        <footer className="w-full flex items-center justify-center border-t mx-auto text-center text-xs gap-8 py-16">
-          <ThemeSwitcher />
-        </footer>
+      {/* Main Content - Centered */}
+      <div className="flex flex-col gap-8 items-center justify-center text-center px-5">
+        <h1 className="text-4xl md:text-6xl font-bold">
+          Polyedge
+        </h1>
+        <p className="text-xl text-muted-foreground">
+          Your Polymarket companion
+        </p>
+        
+        <Button size="lg" variant="default" className="mt-8" asChild>
+          <Link href="/journal">To the App</Link>
+        </Button>
+      </div>
+
+      {/* Theme Switcher - Bottom */}
+      <div className="absolute bottom-8">
+        <ThemeSwitcher />
       </div>
     </main>
   );
