@@ -1,0 +1,12 @@
+{
+  "crons": [
+    {
+      "path": "/api/sync/polymarket",
+      "schedule": "0 */6 * * *"
+    },
+    {
+      "path": "/api/journal/update-resolutions",
+      "schedule": "15 */6 * * *"
+    }
+  ]
+}
