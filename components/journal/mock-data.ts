@@ -185,7 +185,7 @@ export const mockJournalData: JournalDay[] = [
     notes: "Bad timing on both. Should have waited for more info.",
   },
   {
-    date: "2024-11-28",
+    date: "2024-11-29",
     pnl: 410.0,
     volume: 2100,
     categories: ["crypto", "science"],
