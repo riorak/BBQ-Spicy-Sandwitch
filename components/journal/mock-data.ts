@@ -12,7 +12,7 @@ export interface Trade {
 }
 
 export interface JournalDay {
-  date: string; // ISO format YYYY-MM-DD
+  date: string; // ISO format YYYY-MM-TYPE shit
   pnl: number;
   volume: number;
   categories: Exclude<Category, "all">[];
