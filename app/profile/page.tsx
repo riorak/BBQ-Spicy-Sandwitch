@@ -35,8 +35,6 @@ export default function ProfilePage() {
             <div className="text-sm text-muted-foreground">Loading user...</div>
           ) : (
             <PolymarketImport />
-          ) : (
-            <div className="text-sm text-muted-foreground">Please sign in to use imports.</div>
           )}
         </section>
       </div>
